@@ -1,0 +1,23 @@
+.github/workflows/windows-rdp.yml
+name: Free RDP
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: Free RDP Setup
+      run: |
+        cmd.exe /c echo "Starting your Free RDP Session..."
+        cmd.exe /c net user SuruPass@123 /add
+        cmd.exe /c net localgroup administrators SuruPass@123 /add
+        cmd.exe /c net share RDPShare=C:\ /GRANT:SuruPass@123,FULL
+        cmd.exe /c powershell -Command "Enable-PSRemoting -Force"
+        cmd.exe /c powershell -Command "Set-Item wsman:\localhost\client\trustedhosts * -Force"
+        cmd.exe /c powershell -Command "Enable-RemoteDesktop"
+        cmd.exe /c echo "✅ RDP Setup Done. Now connecting..."
+
+    - name: Keep Alive
+      run: |
+        ping 127.0.0.1 -n 9999 > nul
